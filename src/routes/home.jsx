@@ -19,10 +19,7 @@ const MainContent = () => {
 
     const handleSignIn = () => {
         instance
-            .loginRedirect({
-                ...loginRequest,
-                prompt: 'create',
-            })
+            .loginRedirect(loginRequest)
             .catch((error) => console.log(error));
     };
 
@@ -39,8 +36,8 @@ const MainContent = () => {
             <AuthenticatedTemplate>
                 {activeAccount ? (
                     <Button onClick={handleSignOut} variant="primary">
-                    Sign out
-                </Button>
+                        Sign out
+                    </Button>
                 ) : null}
             </AuthenticatedTemplate>
             <UnauthenticatedTemplate>
