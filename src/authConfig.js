@@ -13,11 +13,12 @@ import { LogLevel } from '@azure/msal-browser';
 
 export const msalConfig = {
     auth: {
-        clientId: 'd308f3c0-4043-4f80-b63f-736feead9fd0', // This is the ONLY mandatory field that you need to supply.
-        authority: 'https://approlesdemob2c.b2clogin.com/approlesdemob2c.onmicrosoft.com/B2C_1_approlesdemob2c/v2.0', // Replace the placeholder with your tenant subdomain 
-        redirectUri: '/', // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
-        postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
-        navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
+        clientId: "d308f3c0-4043-4f80-b63f-736feead9fd0", // Replace with your B2C app's Client ID
+        authority: "https://approlesdemob2c.b2clogin.com/approlesdemob2c.onmicrosoft.com/B2C_1_approlesdemob2c", // B2C authority with your user flow
+        knownAuthorities: ["approlesdemob2c.b2clogin.com"], // B2C tenant domain
+        redirectUri: "/", // Ensure this URI is registered in your B2C app registration
+        postLogoutRedirectUri: "/", // URI after logging out
+        navigateToLoginRequestUrl: false // Prevents navigation back to original URL after login
     },
     cache: {
         cacheLocation: 'sessionStorage', // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
@@ -47,6 +48,7 @@ export const msalConfig = {
                 }
             },
         },
+        allowRedirectInIframe: true
     },
 };
 
