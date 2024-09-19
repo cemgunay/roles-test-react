@@ -11,14 +11,25 @@ import { LogLevel } from '@azure/msal-browser';
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md 
  */
 
+export const b2cPolicies = {
+    names: {
+        signUpSignIn: "B2C_1_approlesdemob2c",
+    },
+    authorities: {
+        signUpSignIn: {
+            authority: "https://approlesdemob2c.b2clogin.com/approlesdemob2c.onmicrosoft.com/B2C_1_approlesdemob2c"
+        }
+    },
+    authorityDomain: "approlesdemob2c.b2clogin.com"
+}
+
 export const msalConfig = {
     auth: {
         clientId: "d308f3c0-4043-4f80-b63f-736feead9fd0", // Replace with your B2C app's Client ID
-        authority: "https://approlesdemob2c.b2clogin.com/approlesdemob2c.onmicrosoft.com/B2C_1_approlesdemob2c", // B2C authority with your user flow
-        knownAuthorities: ["approlesdemob2c.b2clogin.com"], // B2C tenant domain
-        redirectUri: "/", // Ensure this URI is registered in your B2C app registration
-        postLogoutRedirectUri: "/", // URI after logging out
-        navigateToLoginRequestUrl: false // Prevents navigation back to original URL after login
+        authority: b2cPolicies.authorities.signUpSignIn.authority,
+        knownAuthorities: [b2cPolicies.authorityDomain],
+        redirectUri: "/",
+        postLogoutRedirectUri: "/"
     },
     cache: {
         cacheLocation: 'sessionStorage', // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
@@ -59,7 +70,7 @@ export const msalConfig = {
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
 export const loginRequest = {
-    scopes: ["openid", "offline_access"],
+    scopes: ["https://approlesdemob2c.onmicrosoft.com/approlesdemob2c/read"]
 };
 
 /**
