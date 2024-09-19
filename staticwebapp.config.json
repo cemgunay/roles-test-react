@@ -41,5 +41,8 @@
     },
     "globalHeaders": {
         "Cache-Control": "no-cache"
+    },
+    "platform": {
+        "apiRuntime": "node:18"
     }
 }
