@@ -1,78 +1,111 @@
 const { app } = require('@azure/functions');
+
+
 const fetch = require('node-fetch').default;
 
 // Azure AD tenant ID and app ID for the service principal
 const clientId = "d308f3c0-4043-4f80-b63f-736feead9fd0"; // This is the App Registration Client ID (Service Principal)
+const tenantId = "a4b2de60-9bd7-43fa-8c11-911b09749203";
+const clientShh = "M8l8Q~yZN5wUTiBmxKgn_p5eLqL6Up-~6wnpqcVM"; // Store this securely
+const servicePrincipalId = "2ef3b8c6-a332-4bbc-a2de-6ab1473c87f5"; // This is the App Registration Object ID (Service Principal)
+const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+
+
 
 app.http('appRolesReact', {
-    methods: ['POST'],
+    methods: ['POST', 'GET'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
         context.log(`Http function processed request for url "${request.url}"`);
 
-        const roles = [];
+        let user;
 
-        // Parse the request body (Postman sends raw JSON data)
-        const user = await request.json();
-
-        context.log(`User details: ${JSON.stringify(user.userDetails)}`);
-
-        // Get user ID from the access token
-        const userId = await getUserIdFromToken(user.accessToken);
-
-        if (!userId) {
-            context.log('Invalid token or unable to extract user ID');
-            return { status: 400, body: { error: 'Invalid token or unable to extract user ID' } };
+        if (request.method === 'POST') {
+            // Parse the request body if it's a POST request
+            user = await request.json();
+        } else if (request.method === 'GET') {
+            // Parse query parameters if it's a GET request
+            user = {
+                userId: request.query.get('userId') || null
+            };
         }
 
-        context.log(`User ID: ${userId}`);
+        // Get user ID from the request payload
+        const userId = user.userId || null; // Use 'userId' from the request
+
+        if (!userId) {
+            context.log('User ID is missing in the request payload');
+            return { status: 400, body: { error: 'User ID is missing' } };
+        }
+
+
+
+
+        const accessToken = await getAccessToken();
+
+
 
         // Get the available app roles from the service principal dynamically
-        const appRoleMappings = await getAppRolesFromServicePrincipal(user.accessToken);
-        if (!appRoleMappings) {
+        const appRoles = await getAppRolesFromServicePrincipal(accessToken, userId);
+
+        if (!appRoles) {
             context.log('Failed to retrieve app roles');
             return { status: 500, body: { error: 'Failed to retrieve app roles' } };
         }
 
-        context.log(`App roles: ${JSON.stringify(appRoleMappings)}`);
-
         // Check user's app role assignments against the dynamic mappings
-        for (const [roleName, appRoleId] of Object.entries(appRoleMappings)) {
-            if (await isUserInAppRole(userId, appRoleId, user.accessToken)) {
-                roles.push(roleName);
-            }
+        const userRoles = await getUserAppRoles(userId, accessToken);
+        if (!userRoles) {
+            context.log('Failed to retrieve user roles');
+            return { status: 500, body: { error: 'Failed to retrieve user roles' } };
         }
 
-        context.log(`User roles: ${JSON.stringify(roles)}`);
+        // Extract appRoleIds from user's assignments
+        const userAppRoleIds = userRoles.value.map(assignment => assignment.appRoleId);
 
-        return { body: JSON.stringify({ roles }),
-    };
+        // Match the appRoleId from user assignments with the id in appRoles and get the value
+        const matchedRoles = appRoles.appRoles
+            .filter(role => userAppRoleIds.includes(role.id)) // Match ids
+            .map(role => role.value); // Only return the values
+
+        // Final result
+        const result = { roles: matchedRoles };
+
+        context.log(`Result: ${JSON.stringify(result)}`);
+
+
+
+        return { body: JSON.stringify(result) };
+        //return { body: 'Hello World' };
     }
 });
 
-// Function to get user ID from the access token
-async function getUserIdFromToken(bearerToken) {
-    console.log(`Bearer token: ${bearerToken}`);
-    const url = 'https://graph.microsoft.com/v1.0/me';
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${bearerToken}`
-        }
+
+
+async function getAccessToken() {
+    const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            client_id: clientId,
+            scope: 'https://graph.microsoft.com/.default', // This requests all granted permissions
+            client_secret: clientShh,
+            grant_type: 'client_credentials'
+        })
     });
 
-    console.log(`Response status: ${response.status}`);
-
-    if (response.status !== 200) {
-        return null;
+    const data = await response.json();
+    if (data.error) {
+        throw new Error(`Error acquiring access token: ${data.error_description}`);
     }
-
-    const graphResponse = await response.json();
-    return graphResponse.id;
+    return data.access_token;
 }
 
+// Function to get app roles from the service principal
 async function getAppRolesFromServicePrincipal(bearerToken) {
-    const url = `https://graph.microsoft.com/v1.0/servicePrincipals?$filter=appId eq '${clientId}'`;
+    console.log('Bearer token: ', bearerToken);
+
+    const url = `https://graph.microsoft.com/v1.0/servicePrincipals/${servicePrincipalId}?$select=appRoles`
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -80,43 +113,33 @@ async function getAppRolesFromServicePrincipal(bearerToken) {
         },
     });
 
-    console.log(`Response status: ${response.status}`);
-
     if (response.status !== 200) {
+        console.log(`Error fetching service principal: ${response.status}`);
         return null;
     }
 
-    const graphResponse = await response.json();
-    const servicePrincipal = graphResponse.value[0];
+    const appRoles = await response.json();
 
-    // Map the app roles to an object { roleName: appRoleId }
-    const appRoleMappings = {};
-    servicePrincipal.appRoles.forEach(appRole => {
-        if (appRole.value) {
-            appRoleMappings[appRole.value] = appRole.id;
-        }
-    });
-
-    return appRoleMappings;
+    return appRoles;
 }
 
-// Function to check if the user is assigned a specific app role
-async function isUserInAppRole(userId, appRoleId, bearerToken) {
+// Function to get user's app role assignments
+async function getUserAppRoles(userId, bearerToken) {
     const url = `https://graph.microsoft.com/v1.0/users/${userId}/appRoleAssignments`;
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${bearerToken}`
+            'Authorization': `Bearer ${bearerToken}` // Ensure your access token is valid
         },
     });
 
-    console.log(`Response status: ${response.status}`);
-
     if (response.status !== 200) {
-        return false;
+        console.log(`Error fetching app role assignments: ${response.status}`);
+        return null;
     }
 
-    const graphResponse = await response.json();
-    const matchingRoles = graphResponse.value.filter(role => role.appRoleId === appRoleId);
-    return matchingRoles.length > 0;
+    const userRoles = await response.json();
+
+    return userRoles;
 }
+
