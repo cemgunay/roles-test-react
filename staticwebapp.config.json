@@ -4,6 +4,10 @@
     },
     "routes": [
         {
+            "route": "/",
+            "allowedRoles": [ "anonymous" ]
+        },
+        {
             "route": "/admin",
             "allowedRoles": [ "admin" ]
         },
