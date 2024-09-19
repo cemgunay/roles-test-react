@@ -1,5 +1,3 @@
-const fetch = require('node-fetch').default;
-
 // Azure AD tenant ID and app ID for the service principal
 const clientId = "d308f3c0-4043-4f80-b63f-736feead9fd0"; // This is the App Registration Client ID (Service Principal)
 const tenantId = "a4b2de60-9bd7-43fa-8c11-911b09749203";
