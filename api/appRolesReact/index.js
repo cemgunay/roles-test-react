@@ -12,6 +12,9 @@ module.exports = async function (context, req) {
 
     if (req.method === 'POST') {
         // Parse the request body if it's a POST request
+
+        context.log('Request Body:', req.body);
+        
         user = req.body;
     } else if (req.method === 'GET') {
         // Parse query parameters if it's a GET request
