@@ -18,6 +18,7 @@
         }
     ],
     "auth": {
+        "rolesSource": "/api/appRolesReact",
         "identityProviders": {
         "customOpenIdConnectProviders": {
             "aadb2c": {
