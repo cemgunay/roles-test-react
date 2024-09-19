@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {
-  createBrowserRouter,
-  RouterProvider,
+    createBrowserRouter,
+    RouterProvider,
 } from "react-router-dom";
 import "./index.css";
 import { EventType, PublicClientApplication } from "@azure/msal-browser";
@@ -29,26 +29,26 @@ msalInstance.addEventCallback((event) => {
 });
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home instance={msalInstance}/>,
-  },
-  {
-    path: "/authenticated",
-    element: <Authenticated/>,
-  },
-  {
-    path: "/admin",
-    element: <Admin/>,
-  },
-  {
-    path: "/beast",
-    element: <Beast/>,
-  }
+    {
+        path: "/",
+        element: <Home instance={msalInstance} />,
+    },
+    {
+        path: "/authenticated",
+        element: <Authenticated />,
+    },
+    {
+        path: "/admin",
+        element: <Admin />,
+    },
+    {
+        path: "/beast",
+        element: <Beast />,
+    }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <RouterProvider router={router} instance={msalInstance}/>
-  </React.StrictMode>
+    <React.StrictMode>
+        <RouterProvider router={router} instance={msalInstance} />
+    </React.StrictMode>
 );
