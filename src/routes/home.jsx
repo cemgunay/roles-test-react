@@ -1,7 +1,6 @@
 import { MsalProvider, AuthenticatedTemplate, useMsal, UnauthenticatedTemplate } from '@azure/msal-react';
 import { Button } from 'react-bootstrap';
 import { loginRequest } from '../authConfig';
-import { InteractionRequiredAuthError } from '@azure/msal-browser';
 
 /**
  * Most applications will need to conditionally render certain components based on whether a user is signed in or not. 
@@ -19,23 +18,9 @@ const MainContent = () => {
     const activeAccount = instance.getActiveAccount();
 
     const handleSignIn = () => {
-        /*
         instance
             .loginRedirect(loginRequest)
             .catch((error) => console.log(error));
-        */
-        instance.acquireTokenSilent(loginRequest).then((tokenResponse) => {
-            console.log("Token acquired silently:", tokenResponse.accessToken);
-        }).catch((error) => {
-            if (error instanceof InteractionRequiredAuthError) {
-                // Fallback to interaction (popup/redirect) if silent token acquisition fails
-                instance.acquireTokenPopup(loginRequest).then((tokenResponse) => {
-                    console.log("Access token acquired via popup:", tokenResponse.accessToken);
-                });
-            } else {
-                console.error("Token acquisition failed:", error);
-            }
-        });
     };
 
     const handleSignOut = () => {

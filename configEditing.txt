@@ -18,3 +18,29 @@
         }
     },
     */
+
+    /*
+    "auth": {
+        "rolesSource": "/api/appRolesReact",
+        "identityProviders": {
+        "customOpenIdConnectProviders": {
+            "aadb2c": {
+            "registration": {
+                "clientIdSettingName": "AADB2C_PROVIDER_CLIENT_ID",
+                "clientCredential": {
+                "clientSecretSettingName": "AADB2C_PROVIDER_CLIENT_SECRET"
+                },
+                "openIdConnectConfiguration": {
+                "wellKnownOpenIdConfiguration": "https://approlesdemob2c.b2clogin.com/approlesdemob2c.onmicrosoft.com/B2C_1_approlesdemob2c/v2.0/.well-known/openid-configuration"
+                }
+            },
+            "login": {
+                "nameClaimType": "email",
+                "scopes": ["openid", "profile", "offline_access"],
+                "loginParameterNames": []
+            }
+            }
+        }
+        }
+    },
+    */
