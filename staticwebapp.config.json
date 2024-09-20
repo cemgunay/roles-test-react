@@ -21,24 +21,6 @@
             "allowedRoles": [ "authenticated" ]
         }
     ],
-    "auth": {
-        "rolesSource": "/api/appRolesReact",
-        "identityProviders": {
-            "azureActiveDirectory": {
-                "userDetailsClaim": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
-                "registration": {
-                    "openIdIssuer": "https://login.microsoftonline.com/a4b2de60-9bd7-43fa-8c11-911b09749203",
-                    "clientIdSettingName": "AADB2C_PROVIDER_CLIENT_ID",
-                    "clientSecretSettingName": "AADB2C_PROVIDER_CLIENT_SECRET"
-                },
-                "login": {
-                    "loginParameters": [
-                        "resource=https://graph.microsoft.com"
-                    ]
-                }
-            }
-        }
-    },
     "globalHeaders": {
         "Cache-Control": "no-cache"
     },

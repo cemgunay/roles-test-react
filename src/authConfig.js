@@ -17,7 +17,8 @@ export const b2cPolicies = {
     },
     authorities: {
         signUpSignIn: {
-            authority: "https://approlesdemob2c.b2clogin.com/approlesdemob2c.onmicrosoft.com/B2C_1_approlesdemob2c"
+            authority1: "https://approlesdemob2c.b2clogin.com/approlesdemob2c.onmicrosoft.com/B2C_1_approlesdemob2c",
+            authority2: "https://login.microsoftonline.com/a4b2de60-9bd7-43fa-8c11-911b09749203"
         }
     },
     authorityDomain: "approlesdemob2c.b2clogin.com"
@@ -26,8 +27,8 @@ export const b2cPolicies = {
 export const msalConfig = {
     auth: {
         clientId: "d308f3c0-4043-4f80-b63f-736feead9fd0", // Replace with your B2C app's Client ID
-        authority: b2cPolicies.authorities.signUpSignIn.authority,
-        knownAuthorities: [b2cPolicies.authorityDomain],
+        authority: b2cPolicies.authorities.signUpSignIn.authority2,
+        //knownAuthorities: [b2cPolicies.authorityDomain],
         redirectUri: "/",
         postLogoutRedirectUri: "/"
     },
@@ -70,7 +71,7 @@ export const msalConfig = {
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
 export const loginRequest = {
-    scopes: ["https://purple-sea-029c8c50f.5.azurestaticapps.net/.auth/login/aadb2c"],
+    scopes: [],
 };
 
 /**
