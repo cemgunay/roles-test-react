@@ -36,8 +36,8 @@
                 }
             },
             "login": {
-                "nameClaimType": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/email",
-                "scopes": ["openid", "profile"],
+                "nameClaimType": "email",
+                "scopes": ["openid", "profile", "offline_access"],
                 "loginParameterNames": []
             }
             }
