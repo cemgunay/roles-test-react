@@ -14,7 +14,7 @@ module.exports = async function (context, req) {
         // Parse the request body if it's a POST request
 
         context.log('Request Body:', req.body);
-        
+
         user = req.body;
     } else if (req.method === 'GET') {
         // Parse query parameters if it's a GET request
@@ -23,8 +23,15 @@ module.exports = async function (context, req) {
         };
     }
 
-    // Get user ID from the request payload
-    const userId = user && user.userId ? user.userId : null;
+    
+    // Below gets user ID from the request payload
+    // COMMENT AND UNCOMMENT AS NEEDED BELOW FOR DEVELOPMENT
+
+    // THIS IS FOR USE WITH EASYAUTH
+    // const userId = user && user.userId ? user.userId : null;
+
+    // THIS IS FOR USE WITH MSAL
+    const userId = user && user.objectId ? user.objectId : null;
 
     if (!userId) {
         context.log('User ID is missing in the request payload');
