@@ -28,7 +28,7 @@ export const msalConfig = {
         clientId: "d308f3c0-4043-4f80-b63f-736feead9fd0", // Replace with your B2C app's Client ID
         authority: b2cPolicies.authorities.signUpSignIn.authority,
         knownAuthorities: [b2cPolicies.authorityDomain],
-        redirectUri: "/",
+        redirectUri: "https://purple-sea-029c8c50f.5.azurestaticapps.net/.auth/login/aadb2c",
         postLogoutRedirectUri: "/"
     },
     cache: {
